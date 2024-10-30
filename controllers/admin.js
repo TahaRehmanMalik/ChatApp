@@ -109,28 +109,32 @@ const allChats=async(req,res,next)=>{
 const allMessages=async(req,res,next)=>{
     try {
         const messages=await Message.find().populate("sender","name avatar").populate("chat","groupChat");
-        const transformedMessages=messages.map(({_id,content,sender,chat,attachemnt,createdAt})=>({
+        console.log("messages",messages);
+        console.count("Messages1");
+        const transformedMessages=messages.map(({_id,content,sender = {}, chat = {},attachemnt,createdAt})=>({
          _id,
         content,
         attachemnt,
         createdAt,
-        chat:chat._id,
-        groupChat:chat.groupChat,
+        chat:chat?._id,
+        groupChat:chat?.groupChat,
         sender:{
-            _id:sender._id,
-            name:sender.name,
-            avatar:sender.avatar.url,
+            _id:sender?._id,
+            name:sender?.name,
+            avatar:sender?.avatar?.url,
         },
 
 
 
         }))
+        console.count("Messages");
         return res.status(200).json({
             success:true,
             messages:transformedMessages
         })
     } catch (error) {
         next(error);
+        console.log("error",error);
     }
 }
 const getDashBoardStats=async(req,res,next)=>{
