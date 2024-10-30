@@ -2,11 +2,13 @@
 import React, { useEffect, useState } from 'react'
 import AdminLayout from '../../components/layout/Adminlayout'
 import Table from '../../components/shared/Table';
-import { Avatar, Box, Stack } from '@mui/material';
+import { Avatar, Box, Skeleton, Stack } from '@mui/material';
 import { dashboardData } from '../../components/constants/sampleData';
 import { formatFile, transformImage } from '../../lib/features';
 import moment from 'moment/moment';
 import RenderAttachment from "../../components/shared/renderAttachment"
+import {useGetDashboardMessagessQuery} from '../../redux/api/api';
+import { useErrors } from '../../hooks/hook';
 const columns = [
   { field: 'id', headerName: 'ID',headerClassName:"table-header", width: 200 },
   {field: 'attachments',
@@ -71,20 +73,29 @@ const columns = [
 ]
 const MessageManagement= () => {
   const[rows,setRows]=useState();
+  const {isLoading,data,isError,error}=useGetDashboardMessagessQuery();
+  useErrors([{isError:isError,error:error}])
+ 
   useEffect(()=>{
-    setRows(dashboardData. messages.map((i)=>({
-      ...i,
-      id:i._id,
-      sender:{
-        name:i.sender.name,
-        avatar:transformImage(i.sender.avatar,50)
-      },
-      createdAt:moment(i.createdAt).format('MMMM Do YYYY, h:mm:ss a')
-    })))
-  },[])
+    if(data){
+      setRows(data.messages.map((i)=>({
+        ...i,
+        id:i._id,
+        sender:{
+          name:i.sender.name,
+          avatar:transformImage(i.sender.avatar,50)
+        },
+        createdAt:moment(i.createdAt).format('MMMM Do YYYY, h:mm:ss a')
+      })))
+    }
+    
+  },[data])
   return (
     <AdminLayout>
-     <Table heading={"All Messages"} columns={columns} rows={rows} rowHeight={200}/>
+      {isLoading?<Skeleton/>:
+       <Table heading={"All Messages"} columns={columns} rows={rows} rowHeight={200}/>
+     }
+    
     </AdminLayout>
   )
 }

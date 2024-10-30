@@ -4,7 +4,7 @@ import { server } from '../../components/constants/config';
 const api=createApi({
 reducerPath:'api',  //name of reducer is api
 baseQuery:fetchBaseQuery({baseUrl:`${server}/api/v1/`}),  //base url in every call such as localhost:5000/api/v1/
-tagTypes:['Chat',"User","Message","Dashboard-Stats"],
+tagTypes:['Chat',"User","Message","Dashboard-Stats","Dashboard-Users","Dashboard-Chats","Dashboard-Messages"],
 endpoints:(builder)=>({
     myChats:builder.query({
     query:()=>({
@@ -150,6 +150,27 @@ endpoints:(builder)=>({
     }),
     providesTags: ["Dashboard-Stats"],
 }),
+getDashboardUsers: builder.query({
+  query: () => ({
+      url: 'admin/users',
+      credentials: 'include',
+  }),
+  providesTags: ["Dashboard-Users"],
+}),
+getDashboardChats: builder.query({
+  query: () => ({
+      url: 'admin/chats',
+      credentials: 'include',
+  }),
+  providesTags: ["Dashboard-Chats"],
+}),
+getDashboardMessagess: builder.query({
+  query: () => ({
+      url: 'admin/messages',
+      credentials: 'include',
+  }),
+  providesTags: ["Dashboard-Messages"],
+}),
 })
 });
 export default api;
@@ -168,5 +189,8 @@ useRemoveGroupMemberMutation,
 useAddGroupMembersMutation,
 useDeleteChatMutation,
 useLeaveGroupMutation,
-useGetDashboardStatsQuery
+useGetDashboardStatsQuery,
+useGetDashboardUsersQuery,
+useGetDashboardChatsQuery,
+useGetDashboardMessagessQuery
 }=api;
