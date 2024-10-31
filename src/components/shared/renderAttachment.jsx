@@ -14,7 +14,6 @@ const RenderAttachment = (file,url) => {
             objectFit:'contain'
         }}
         />
-       
     case 'audio':
         return <audio src={url} preload='none' controls/>
     default:

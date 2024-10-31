@@ -1,12 +1,12 @@
 import React from 'react'
 import AdminLayout from '../../components/layout/Adminlayout';
-import { Box, Container, Paper, Stack, Typography } from '@mui/material';
+import { Box, Container, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import { AdminPanelSettings as AdminPanelSettingsIcon, Group as GroupIcon, Message as MessageIcon, Notifications as NotificationsIcon, Person as PersonIcon} from '@mui/icons-material';
 import moment from 'moment/moment';
 import { CurveButton, SearchField } from '../../components/styles/StyledComponent';
 import { DoughnutChart, LineChart } from '../../components/specific/Chart';
 import { useGetDashboardStatsQuery } from '../../redux/api/api';
-import{LayoutLoaders} from '../../components/layout/Loaders';
+
 import {useErrors} from '../../hooks/hook'
 const Dashboard = () => {
   const { data, error, isLoading,isError }=useGetDashboardStatsQuery();
@@ -46,8 +46,9 @@ const Dashboard = () => {
 </Stack>
 
 
-  return isLoading?<LayoutLoaders/>:(
+  return(
     <AdminLayout>
+    {isLoading?<Skeleton height={'100vh'}/>:
      <Container component={'main'}>
      {AppBar}
      <Stack direction={{
@@ -107,6 +108,7 @@ const Dashboard = () => {
      </Stack>
      {Widgets}
      </Container>
+    }
     
     </AdminLayout>
     

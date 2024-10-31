@@ -5,7 +5,7 @@ import { greyColor, orange } from '../components/constants/color';
 import AppLayout from '../components/layout/AppLayout';
 import { InputBox } from '../components/styles/StyledComponent';
 
-import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../components/constants/events';
+import { ALERT, CHAT_JOINED, CHAT_LEAVED, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../components/constants/events';
 import MessageComponent from '../components/shared/MessageComponent';
 import { useErrors, useSocketEvents } from '../hooks/hook';
 import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api';
@@ -72,12 +72,15 @@ setIamTyping(false);
     setMessage("");
   }
 useEffect(()=>{
+ 
+  socket.emit(CHAT_JOINED,{userId:user._id,members});
   dispatch(removeNewMessagesAlert(chatId))
 return ()=>{
   setMessages([]);
  setMessage("");
  setOldMessages([]);
 setPage(1);
+socket.emit(CHAT_LEAVED,{userId:user._id,members});
 }
 },[chatId])
 

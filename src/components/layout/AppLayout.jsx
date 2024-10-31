@@ -1,6 +1,6 @@
 import { Drawer, Skeleton } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useErrors, useSocketEvents } from '../../hooks/hook';
@@ -11,7 +11,7 @@ import Title from '../shared/Title';
 import ChatList from '../specific/ChatList';
 import Profile from '../specific/Profile';
 import Header from './Header';
-import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from '../constants/events';
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from '../constants/events';
 import { incrementNotification, setNewMessagesAlert } from '../../redux/reducers/chat';
 import { getOrSaveFromStorage } from '../../lib/features';
 import DeleteChatMenu from '../dialogs/DeleteChatMenu';
@@ -23,6 +23,8 @@ const AppLayout =(WrappedComponent)=>{
  const navigate=useNavigate();
 const dispatch=useDispatch();
 const socket=getSocket();
+
+const[onlineUsers,setOnlineUsers]=useState([]);
 
 const {isMobile}=useSelector((state)=>state.misc);
 const {user}=useSelector((state)=>state.auth);
@@ -49,16 +51,25 @@ const{newMessagesAlert}=useSelector((state)=>state.chat);
    if(data.chatId===chatId)return;
     dispatch(setNewMessagesAlert(data));
   },[chatId]);
+
   const newRequestListener=useCallback(()=>{
     dispatch(incrementNotification());
   },[]);
+
 const refetchListener=useCallback(()=>{
   refetch();
   navigate('/');
 },[refetch]);
+
+const onlineUsersListener=useCallback((data)=>{
+setOnlineUsers(data);
+
+},[]);
+
   const eventHandlers={[NEW_MESSAGE_ALERT]:newMessagesListener,
     [NEW_REQUEST]:newRequestListener,
-    [REFETCH_CHATS]:refetchListener
+    [REFETCH_CHATS]:refetchListener,
+    [ONLINE_USERS]:onlineUsersListener
   };
   useSocketEvents(socket,eventHandlers);
 
@@ -76,6 +87,7 @@ const refetchListener=useCallback(()=>{
         chatId={chatId}
         handleDeleteChat={handleDeleteChat}
         newMessagesAlert={newMessagesAlert}
+        onlineUsers={onlineUsers}
         />
         </Drawer>
       )
@@ -88,6 +100,7 @@ const refetchListener=useCallback(()=>{
        chatId={chatId}
        handleDeleteChat={handleDeleteChat}
        newMessagesAlert={newMessagesAlert}
+       onlineUsers={onlineUsers}
        />
        }
   </Grid>

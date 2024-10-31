@@ -32,8 +32,11 @@ const MessageComponent = ({message,user}) => {
          {
             attachments.length>0 &&
                 attachments.map((attachment,index)=>{
+                    
                     const url=attachment.url;
                     const file=formatFile(url);
+                   
+                 
                 return(
                     <Box key={index}>
                         <a href={url} 

@@ -14,6 +14,7 @@ if(fileExt==='mp3'||fileExt==='webm')
         {
             return "image"
         }
+       
     return "file";
 }
 

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import AdminLayout from '../../components/layout/Adminlayout'
-import Table from '../../components/shared/Table';
 import { Avatar, Skeleton } from '@mui/material';
-import { dashboardData } from '../../components/constants/sampleData';
+import React, { useEffect, useState } from 'react';
+import AdminLayout from '../../components/layout/Adminlayout';
+import Table from '../../components/shared/Table';
+import { useErrors } from '../../hooks/hook';
 import { transformImage } from '../../lib/features';
 import { useGetDashboardUsersQuery } from '../../redux/api/api';
-import { useErrors } from '../../hooks/hook';
 const columns = [
   { field: 'id', headerName: 'ID',headerClassName:"table-header", width: 200 },
   {field: 'avatar',
@@ -56,7 +55,7 @@ const UserManagement = () => {
   },[data])
   return (
     <AdminLayout>
-     {isLoading?<Skeleton/>:
+     {isLoading?<Skeleton height={'100vh'}/>:
      <Table heading={"All Users"} columns={columns} rows={rows}/>}
     </AdminLayout>
   )

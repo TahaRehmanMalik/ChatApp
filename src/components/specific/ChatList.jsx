@@ -15,7 +15,7 @@ handleDeleteChat
         chats?.map((data,index)=>{
           const {avatar,name,_id,groupChat,members}=data;
           const newMessageAlert=newMessagesAlert.find(({chatId})=>chatId===_id);
-          const isOnline=members?.some((member)=>onlineUsers.includes(_id));
+          const isOnline=members?.some((member)=>onlineUsers.includes(member));
             return(<ChatItem
             index={index}
             newMessageAlert={newMessageAlert}
