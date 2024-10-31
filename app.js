@@ -8,7 +8,7 @@ import chatRoute from './routes/chat.js';
 import adminRoute from './routes/admin.js';
 import { Server } from 'socket.io';
 import {createServer} from 'http';
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from './constants/events.js';
+import { CHAT_JOINED, CHAT_LEAVED, NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, START_TYPING, STOP_TYPING } from './constants/events.js';
 import { v4 as uuid } from 'uuid';
 import { getSockets } from './lib/helper.js';
 import { Message } from './models/message.js';
@@ -25,6 +25,7 @@ const port=process.env.PORT||5000;
  const adminSecretKey=process.env.ADMIN_SECRET_KEY||"Hellopakistan";
  const envMode=process.env.NODE_ENV.trim()||"PRODUCTION";
  const userSocketIDs=new Map();
+ const onlineUsers=new Set();
 connectDB(mongoUrl);
 cloudinary.config({
     cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
@@ -55,7 +56,7 @@ io.on("connection",(socket)=>{
     const user=socket.user;
 
     userSocketIDs.set(user._id.toString(),socket.id);
-    console.log(userSocketIDs);
+    
     socket.on(NEW_MESSAGE,async({chatId,members,message})=>{
         const messageForRealTime={
             content:message,
@@ -95,10 +96,26 @@ io.on("connection",(socket)=>{
         const membersSocket=getSockets(members);
         socket.to(membersSocket).emit(STOP_TYPING,{chatId});
     })
+    socket.on(CHAT_JOINED,({userId,members})=>{
+    onlineUsers.add(userId.toString());
+    const membersSocket=getSockets(members);
+    
+    io.to(membersSocket).emit(ONLINE_USERS,Array.from(onlineUsers))
+    })
+    socket.on(CHAT_LEAVED,({userId,members})=>{
+        onlineUsers.delete(userId.toString());
+
+        const membersSocket=getSockets(members);
+    io.to(membersSocket).emit(ONLINE_USERS,Array.from(onlineUsers))
+        
+    })
 
     socket.on("disconnect",()=>{
-        console.log("User Disconnected");
+      
         userSocketIDs.delete(user._id.toString());
+        onlineUsers.delete(user._id.toString());
+        socket.broadcast.emit(ONLINE_USERS,Array.from(onlineUsers))
+
     })
 })
 app.use(errorMiddleware)
